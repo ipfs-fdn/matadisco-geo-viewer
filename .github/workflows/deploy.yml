@@ -37,15 +37,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: latest
-      - name: Install ESM dependencies
+      - name: Install dependencies and build
         run: |
           npm ci
-          rm --recursive --force --verbose node_modules
+          npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          # Upload entire repository
-          path: '.'
+          path: './dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
