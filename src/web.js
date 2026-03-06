@@ -44,14 +44,34 @@ if (mapEnabled) {
   initMap()
 }
 
-function fetchAndPlotMetadata(url) {
-  if (!mapEnabled) return
+function fetchAndPlotMetadata(url, cardElement) {
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
-      if (!mapEnabled || !data.geometry?.coordinates) return
-      geoJsonLayer.addData(data.geometry)
-      map.fitBounds(geoJsonLayer.getBounds(), { padding: [20, 20] })
+      // Plot geometry on map
+      if (mapEnabled && data.geometry?.coordinates) {
+        geoJsonLayer.addData(data.geometry)
+        map.fitBounds(geoJsonLayer.getBounds(), { padding: [20, 20] })
+      }
+
+      // Display key fields inline in the card
+      const dl = cardElement.querySelector(".metadata-content")
+      const props = data.properties ?? {}
+      const fields = []
+      if (props.datetime) fields.push(["Date", new Date(props.datetime).toLocaleString()])
+      if (props["eo:cloud_cover"] !== undefined) fields.push(["Cloud cover", `${Math.round(props["eo:cloud_cover"])}%`])
+      if (data.collection) fields.push(["Collection", data.collection])
+
+      fields.forEach(([key, value]) => {
+        const div = document.createElement("div")
+        const dt = document.createElement("span")
+        dt.className = "font-medium"
+        dt.textContent = `${key}: `
+        const dd = document.createElement("span")
+        dd.textContent = value
+        div.append(dt, dd)
+        dl.append(div)
+      })
     })
     .catch(() => {})
 }
@@ -108,7 +128,7 @@ for await (const record of stream) {
 
   // Each record contains a link to the metadata
   recordElement.querySelector("a").href = record.metadata
-  recordElement.querySelector("a").textContent = "Metadata"
+  recordElement.querySelector("a").textContent = record.metadata
 
   // If the there is a preview and it's an image, show it.
   if (
@@ -123,9 +143,9 @@ for await (const record of stream) {
     previewElement.prepend(imageElement)
   }
 
-  fetchAndPlotMetadata(record.metadata)
-
+  // Prepend first so the DOM element exists when the fetch resolves
   recordsElement.prepend(recordElement)
+  fetchAndPlotMetadata(record.metadata, recordsElement.firstElementChild)
 
   if (recordsElement.children.length > MAX_ITEMS) {
     recordsElement.lastElementChild.remove()
