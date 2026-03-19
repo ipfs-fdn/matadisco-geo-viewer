@@ -33,7 +33,15 @@
           </div>
           <div id="status-message" class="text-sm text-gray-500 hidden lg:block truncate"></div>
         </div>
-        <div class="flex items-center gap-4 shrink-0">
+        <div class="flex items-center gap-4 shrink-0 flex-wrap">
+          <select id="mode-select" class="text-sm border border-gray-300 rounded px-2 py-1">
+            <option value="stream">Live Stream</option>
+            <option value="pds" selected>PDS Read</option>
+          </select>
+          <label class="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer select-none">
+            <input type="checkbox" id="geo-toggle" class="accent-blue-600">
+            Geo only
+          </label>
           <label class="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer select-none">
             <input type="checkbox" id="map-toggle" class="accent-blue-600" checked>
             Render on Map
@@ -45,6 +53,22 @@
             </svg>
           </a>
         </div>
+      </div>
+    </div>
+
+    <!-- PDS controls (hidden by default, shown in PDS mode) -->
+    <div id="pds-controls" class="hidden bg-white border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-6 py-2 flex items-center gap-2 flex-wrap">
+        <input id="pds-url" type="text" value="https://bsky.social"
+          placeholder="PDS URL (for fetching records)" class="text-sm border border-gray-300 rounded px-2 py-1 w-56">
+        <input id="pds-did" type="text" placeholder="DID (leave blank to discover)"
+          class="text-sm border border-gray-300 rounded px-2 py-1 w-72">
+        <button id="pds-fetch" class="text-sm bg-blue-600 text-white rounded px-3 py-1 hover:bg-blue-700">
+          Fetch
+        </button>
+        <button id="pds-load-more" class="hidden text-sm bg-gray-200 text-gray-700 rounded px-3 py-1 hover:bg-gray-300">
+          Load More
+        </button>
       </div>
     </div>
 

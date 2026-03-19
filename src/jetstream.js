@@ -1,7 +1,7 @@
 import { JetstreamSubscription } from "@atcute/jetstream"
 
-// Only show records from known geo-metadata providers
-const GEO_METADATA_PREFIXES = ["https://earth-search.aws.element84.com"]
+// Known geo-metadata providers, used by the UI to filter records
+export const GEO_METADATA_PREFIXES = ["https://earth-search.aws.element84.com"]
 
 export const startStream = (startTime) => {
   const subscription = new JetstreamSubscription({
@@ -21,16 +21,7 @@ export const consumeStream = async function* (subscription) {
       const { operation } = event.commit
 
       if (operation === "create" || operation === "update") {
-        const record = event.commit.record
-        // Filter to records from known geo-metadata providers
-        const isGeo =
-          record.metadata &&
-          GEO_METADATA_PREFIXES.some((prefix) =>
-            record.metadata.startsWith(prefix),
-          )
-        if (isGeo) {
-          yield record
-        }
+        yield event.commit.record
       }
     }
   }
