@@ -70,8 +70,8 @@ geoToggle.addEventListener("change", () => {
 // Check if a record passes the geo-metadata prefix filter
 function isGeoRecord(record) {
   return (
-    record.metadata &&
-    GEO_METADATA_PREFIXES.some((prefix) => record.metadata.startsWith(prefix))
+    record.resource &&
+    GEO_METADATA_PREFIXES.some((prefix) => record.resource.startsWith(prefix))
   )
 }
 
@@ -118,8 +118,8 @@ function renderRecord(record) {
   const previewElement = recordElement.querySelector("div.preview")
 
   // Each record contains a link to the metadata
-  recordElement.querySelector("a").href = record.metadata
-  recordElement.querySelector("a").textContent = record.metadata
+  recordElement.querySelector("a").href = record.resource
+  recordElement.querySelector("a").textContent = record.resource
 
   // If the there is a preview and it's an image, show it.
   if (
@@ -134,15 +134,15 @@ function renderRecord(record) {
     previewElement.prepend(imageElement)
   }
 
-  // Show when the record was created
-  if (record.created) {
+  // Show when the record was published at
+  if (record.publishedAt) {
     const dl = recordElement.querySelector(".metadata-content")
     const div = document.createElement("div")
     const dt = document.createElement("span")
     dt.className = "font-medium"
-    dt.textContent = "Created: "
+    dt.textContent = "Published at: "
     const dd = document.createElement("span")
-    dd.textContent = new Date(record.created).toLocaleString()
+    dd.textContent = new Date(record.publishedAt).toLocaleString()
     div.append(dt, dd)
     dl.append(div)
   }
@@ -164,7 +164,7 @@ function renderRecord(record) {
   recordsElement.prepend(recordElement)
   // Only fetch and render STAC metadata for geo records
   if (isGeoRecord(record)) {
-    fetchAndPlotMetadata(record.metadata, recordsElement.firstElementChild)
+    fetchAndPlotMetadata(record.resource, recordsElement.firstElementChild)
   }
 
   if (recordsElement.children.length > MAX_ITEMS) {
